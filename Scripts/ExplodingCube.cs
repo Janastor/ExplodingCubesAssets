@@ -67,7 +67,6 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     {
         int floatCompensation = 1;
         ExplodingCube spawned;
-        
         int childrenCount = Random.Range(_minChildren, _maxChildren + floatCompensation);
 
         for (int i = 0; i < childrenCount; i++)
