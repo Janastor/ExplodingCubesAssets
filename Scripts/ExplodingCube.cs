@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 public class ExplodingCube : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private ExplodingCube _cubePrefab;
+    [SerializeField] private CubeSpawner _spawner;
+    [SerializeField] private Explosion _explosion;
     
     private Transform _transform;
     private Rigidbody _rb;
@@ -33,18 +35,22 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
         Colorize();
     }
 
-    private void Init(float scale, float divisionChance, Vector3 force)
+    public void Init(float scale, float divisionChance)
     {
         _scale = scale;
         _transform.localScale = _scale * Vector3.one;
         _divisionChance = divisionChance;
-        _rb.AddForce(force, ForceMode.Impulse);
     }
 
     private void Explode()
     {
+        ExplodingCube[] spawnedCubes;
+
         if (CalculateDivisionChance())
-            GenerateChildren();
+        {
+            spawnedCubes = SpawnCubes();
+            _explosion.AddExplosionForce(_rb.position, spawnedCubes, _explosionForce * _scale);
+        }
         
         Destroy(gameObject);
     }
@@ -58,38 +64,21 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     private bool CalculateDivisionChance()
     {
         float chance = Random.Range(0f, 1f);
-        print(chance);
         
         return chance <= _divisionChance;
     }
 
-    private void GenerateChildren()
+    private ExplodingCube[] SpawnCubes()
     {
+        ExplodingCube[] spawnedCubes;
         int floatCompensation = 1;
-        ExplodingCube spawned;
-        int childrenCount = Random.Range(_minChildren, _maxChildren + floatCompensation);
+        int cubesToSpawn = Random.Range(_minChildren, _maxChildren + floatCompensation);
 
-        for (int i = 0; i < childrenCount; i++)
-        {
-            float angle = i * Mathf.PI * 2 / childrenCount;
-            Vector3 position = CalculateChildPosition(angle, _childrenSpawnRadius);
-            Vector3 force = CalculateExplosionDirection(position) * _explosionForce * _scale;
-            
-            spawned = Instantiate(_cubePrefab, position, Quaternion.identity);
-            spawned.Init(_scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider, force);
-        }
-    }
+        spawnedCubes = _spawner.SpawnCubes(_rb.position, _childrenSpawnRadius, cubesToSpawn, _scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider);
 
-    private Vector3 CalculateChildPosition(float angle, float radius)
-    {
-        return _transform.position + (new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius) * _scale);
+        return spawnedCubes;
     }
     
-    private Vector3 CalculateExplosionDirection(Vector3 position)
-    {
-        return (position - _transform.position).normalized;
-    }
-
     private Color GetRandomColor()
     {
         return new Color(Random.Range(_minColorValue, _maxColorValue), Random.Range(_minColorValue, _maxColorValue), Random.Range(_minColorValue, _maxColorValue));

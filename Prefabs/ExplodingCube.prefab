@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 4013881594718513857}
   - component: {fileID: 2833720925256918067}
   - component: {fileID: 6973008856316579495}
+  - component: {fileID: 77061748551116801}
+  - component: {fileID: 6351975669548222171}
   m_Layer: 0
   m_Name: ExplodingCube
   m_TagString: Untagged
@@ -147,3 +149,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cubePrefab: {fileID: 6973008856316579495}
+  _spawner: {fileID: 77061748551116801}
+  _explosion: {fileID: 6351975669548222171}
+--- !u!114 &77061748551116801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794385050007167667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45688e102120a25468febb1ff43b53c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cubePrefab: {fileID: 6973008856316579495}
+--- !u!114 &6351975669548222171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794385050007167667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ad1c8678bbcb244389ab37889e1e7f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
