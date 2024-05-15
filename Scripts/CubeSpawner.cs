@@ -6,7 +6,7 @@ public class CubeSpawner : MonoBehaviour
 {
     [SerializeField] private ExplodingCube _cubePrefab;
     
-    public ExplodingCube[] SpawnCubes(Vector3 initialPosition, float radius, int count, float scale, float divisionChance)
+    public ExplodingCube[] SpawnCubes(Vector3 initialPosition, Transform cubeHandler, float radius, int count, float scale, float divisionChance)
     {
         ExplodingCube[] spawnedCubes = new ExplodingCube[count];
         
@@ -15,7 +15,7 @@ public class CubeSpawner : MonoBehaviour
             float angle = i * Mathf.PI * 2 / count;
             Vector3 position = CalculateChildPosition(initialPosition, angle, radius * scale);
             
-            spawnedCubes[i] = Instantiate(_cubePrefab, position, Quaternion.identity);
+            spawnedCubes[i] = Instantiate(_cubePrefab, position, Quaternion.identity, cubeHandler);
             spawnedCubes[i].Init(scale, divisionChance);
         }
         

@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 public class ExplodingCube : MonoBehaviour, IPointerDownHandler
 {
+    [SerializeField] private Transform _cubeHandler;
     [SerializeField] private ExplodingCube _cubePrefab;
     [SerializeField] private CubeSpawner _spawner;
     [SerializeField] private Explosion _explosion;
@@ -14,6 +15,8 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     private Transform _transform;
     private MeshRenderer _meshRenderer;
     private float _scale = 1;
+    private float _explosionRadius = 1f;
+    private float _undividedCubeExplosionForce = 5f;
     private float _explosionForce = 10f;
     private float _childrenSpawnRadius = 0.5f;
     private float _nextGenScaleDivider = 2f;
@@ -30,6 +33,7 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     {
         _transform = GetComponent<Transform>();
         Rigidbody = GetComponent<Rigidbody>();
+        Rigidbody.mass = _scale;
         Colorize();
     }
 
@@ -51,6 +55,11 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
         {
             ExplodingCube[] spawnedCubes = SpawnCubes();
             _explosion.AddExplosionForce(Rigidbody.position, spawnedCubes, _explosionForce * _scale);
+        }
+        else
+        {
+            ExplodingCube[] cubes = _cubeHandler.GetComponentsInChildren<ExplodingCube>();
+            _explosion.AddExplosionForce(Rigidbody.position, cubes, _undividedCubeExplosionForce / _scale, _explosionRadius / _scale);
         }
         
         Destroy(gameObject);
@@ -74,7 +83,7 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
         int floatCompensation = 1;
         int cubesToSpawn = Random.Range(_minChildren, _maxChildren + floatCompensation);
         
-        return _spawner.SpawnCubes(Rigidbody.position, _childrenSpawnRadius, cubesToSpawn, _scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider);
+        return _spawner.SpawnCubes(Rigidbody.position, _cubeHandler, _childrenSpawnRadius, cubesToSpawn, _scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider);
     }
     
     private Color GetRandomColor()
