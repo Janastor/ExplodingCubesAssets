@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(Rigidbody))]
+
 public class ExplodingCube : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private ExplodingCube _cubePrefab;
@@ -10,7 +12,6 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     [SerializeField] private Explosion _explosion;
     
     private Transform _transform;
-    private Rigidbody _rb;
     private MeshRenderer _meshRenderer;
     private float _scale = 1;
     private float _explosionForce = 10f;
@@ -22,17 +23,19 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
     private int _maxChildren = 6;
     private float _minColorValue = 0.25f;
     private float _maxColorValue = 0.9f;
-    
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        Explode();
-    }
+
+    public Rigidbody Rigidbody { get; private set; }
 
     private void Awake()
     {
         _transform = GetComponent<Transform>();
-        _rb = GetComponent<Rigidbody>();
+        Rigidbody = GetComponent<Rigidbody>();
         Colorize();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Explode();
     }
 
     public void Init(float scale, float divisionChance)
@@ -44,12 +47,10 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
 
     private void Explode()
     {
-        ExplodingCube[] spawnedCubes;
-
         if (CalculateDivisionChance())
         {
-            spawnedCubes = SpawnCubes();
-            _explosion.AddExplosionForce(_rb.position, spawnedCubes, _explosionForce * _scale);
+            ExplodingCube[] spawnedCubes = SpawnCubes();
+            _explosion.AddExplosionForce(Rigidbody.position, spawnedCubes, _explosionForce * _scale);
         }
         
         Destroy(gameObject);
@@ -70,13 +71,10 @@ public class ExplodingCube : MonoBehaviour, IPointerDownHandler
 
     private ExplodingCube[] SpawnCubes()
     {
-        ExplodingCube[] spawnedCubes;
         int floatCompensation = 1;
         int cubesToSpawn = Random.Range(_minChildren, _maxChildren + floatCompensation);
-
-        spawnedCubes = _spawner.SpawnCubes(_rb.position, _childrenSpawnRadius, cubesToSpawn, _scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider);
-
-        return spawnedCubes;
+        
+        return _spawner.SpawnCubes(Rigidbody.position, _childrenSpawnRadius, cubesToSpawn, _scale / _nextGenScaleDivider, _divisionChance / _divisionChanceDivider);
     }
     
     private Color GetRandomColor()
